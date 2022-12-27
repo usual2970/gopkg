@@ -10,27 +10,27 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type dlogger struct {
+type DLogger struct {
 	logger logx.Logger
 	fields []logx.LogField
 }
 
 var (
-	dlog *dlogger
+	dlog *DLogger
 
 	Debug, Error, Info, Slow     func(...interface{})
 	Debugf, Errorf, Infof, Slowf func(string, ...interface{})
 	Debugv, Errorv, Infov, Slowv func(interface{})
 	Debugw, Errorw, Infow, Sloww func(string, ...logx.LogField)
 
-	WithCallerSkip func(skip int) *dlogger
+	WithCallerSkip func(skip int) *DLogger
 
-	WithContext func(ctx context.Context) *dlogger
+	WithContext func(ctx context.Context) *DLogger
 
-	WithDuration func(d time.Duration) *dlogger
+	WithDuration func(d time.Duration) *DLogger
 
-	WithFields func(map[string]interface{}) *dlogger
-	WithField  func(string, interface{}) *dlogger
+	WithFields func(map[string]interface{}) *DLogger
+	WithField  func(string, interface{}) *DLogger
 )
 
 const (
@@ -38,17 +38,13 @@ const (
 	defaultServiceName = "hub"
 )
 
-func init() {
-	Setup()
-}
-
 func Setup() {
 	conf := logx.LogConf{
 		ServiceName: getServiceName(),
 		Mode:        getMode(),
 	}
 	logx.MustSetup(conf)
-	dlog = &dlogger{
+	dlog = &DLogger{
 		logger: logx.WithCallerSkip(2),
 		fields: make([]logx.LogField, 0),
 	}
@@ -101,86 +97,86 @@ func Close() error {
 	return logx.Close()
 }
 
-func (l *dlogger) Debug(v ...interface{}) {
+func (l *DLogger) Debug(v ...interface{}) {
 	l.print(l.logger.Debugw, v...)
 }
 
-func (l *dlogger) Debugf(format string, v ...interface{}) {
+func (l *DLogger) Debugf(format string, v ...interface{}) {
 	l.printf(l.logger.Debugw, format, v...)
 }
 
-func (l *dlogger) Debugv(v interface{}) {
+func (l *DLogger) Debugv(v interface{}) {
 	l.printv(l.logger.Debugw, v)
 }
 
-func (l *dlogger) Debugw(msg string, fields ...LogField) {
+func (l *DLogger) Debugw(msg string, fields ...LogField) {
 	l.printw(l.logger.Debugw, msg, fields...)
 }
 
-func (l *dlogger) Error(v ...interface{}) {
+func (l *DLogger) Error(v ...interface{}) {
 	l.print(l.logger.Errorw, v...)
 }
 
-func (l *dlogger) Errorf(format string, v ...interface{}) {
+func (l *DLogger) Errorf(format string, v ...interface{}) {
 	l.printf(l.logger.Errorw, format, v...)
 }
 
-func (l *dlogger) Errorv(v interface{}) {
+func (l *DLogger) Errorv(v interface{}) {
 	l.printv(l.logger.Errorw, v)
 }
 
-func (l *dlogger) Errorw(msg string, fields ...LogField) {
+func (l *DLogger) Errorw(msg string, fields ...LogField) {
 	l.printw(l.logger.Errorw, msg, fields...)
 }
 
-func (l *dlogger) Info(v ...interface{}) {
+func (l *DLogger) Info(v ...interface{}) {
 	l.print(l.logger.Infow, v...)
 }
 
-func (l *dlogger) Infof(format string, v ...interface{}) {
+func (l *DLogger) Infof(format string, v ...interface{}) {
 	l.printf(l.logger.Infow, format, v...)
 }
 
-func (l *dlogger) Infov(v interface{}) {
+func (l *DLogger) Infov(v interface{}) {
 	l.printv(l.logger.Infow, v)
 }
 
-func (l *dlogger) Infow(msg string, fields ...LogField) {
+func (l *DLogger) Infow(msg string, fields ...LogField) {
 	l.printw(l.logger.Infow, msg, fields...)
 }
 
-func (l *dlogger) Slow(v ...interface{}) {
+func (l *DLogger) Slow(v ...interface{}) {
 	l.print(l.logger.Sloww, v...)
 }
 
-func (l *dlogger) Slowf(format string, v ...interface{}) {
+func (l *DLogger) Slowf(format string, v ...interface{}) {
 	l.printf(l.logger.Sloww, format, v...)
 }
 
-func (l *dlogger) Slowv(v interface{}) {
+func (l *DLogger) Slowv(v interface{}) {
 	l.printv(l.Sloww, v)
 }
 
-func (l *dlogger) Sloww(msg string, fields ...LogField) {
+func (l *DLogger) Sloww(msg string, fields ...LogField) {
 	l.printw(l.logger.Sloww, msg, fields...)
 }
 
-func (l *dlogger) WithCallerSkip(skip int) *dlogger {
+func (l *DLogger) WithCallerSkip(skip int) *DLogger {
 	l.logger.WithCallerSkip(skip)
 	return l
 }
 
-func (l *dlogger) WithContext(ctx context.Context) *dlogger {
+func (l *DLogger) WithContext(ctx context.Context) *DLogger {
 	l.logger.WithContext(ctx)
 	return l
 }
 
-func (l *dlogger) WithDuration(d time.Duration) *dlogger {
+func (l *DLogger) WithDuration(d time.Duration) *DLogger {
 	l.logger.WithDuration(d)
 	return l
 }
 
-func (l *dlogger) WithFields(fields map[string]interface{}) *dlogger {
+func (l *DLogger) WithFields(fields map[string]interface{}) *DLogger {
 	clone := l.clone()
 	for k, v := range fields {
 		clone.fields = append(clone.fields, logx.Field(k, v))
@@ -188,7 +184,7 @@ func (l *dlogger) WithFields(fields map[string]interface{}) *dlogger {
 	return clone
 }
 
-func (l *dlogger) WithField(k string, v interface{}) *dlogger {
+func (l *DLogger) WithField(k string, v interface{}) *DLogger {
 	clone := l.clone()
 
 	clone.fields = append(clone.fields, logx.Field(k, v))
@@ -196,27 +192,27 @@ func (l *dlogger) WithField(k string, v interface{}) *dlogger {
 	return clone
 }
 
-func (l *dlogger) print(output func(msg string, fields ...logx.LogField), args ...interface{}) {
+func (l *DLogger) print(output func(msg string, fields ...logx.LogField), args ...interface{}) {
 	output(fmt.Sprint(args...), l.fields...)
 }
 
-func (l *dlogger) printf(output func(msg string, fields ...logx.LogField), format string, args ...interface{}) {
+func (l *DLogger) printf(output func(msg string, fields ...logx.LogField), format string, args ...interface{}) {
 	output(fmt.Sprintf(format, args...), l.fields...)
 }
 
-func (l *dlogger) printw(output func(msg string, fields ...logx.LogField), msg string, fields ...logx.LogField) {
+func (l *DLogger) printw(output func(msg string, fields ...logx.LogField), msg string, fields ...logx.LogField) {
 	output(msg, append(l.fields, fields...)...)
 }
 
-func (l *dlogger) printv(output func(msg string, fields ...logx.LogField), msg interface{}) {
+func (l *DLogger) printv(output func(msg string, fields ...logx.LogField), msg interface{}) {
 	output(fmt.Sprint(msg), l.fields...)
 }
 
-func (l *dlogger) clone() *dlogger {
+func (l *DLogger) clone() *DLogger {
 	var fields []logx.LogField
 	fields = append(fields, l.fields...)
 
-	return &dlogger{
+	return &DLogger{
 		logger: l.logger,
 		fields: fields,
 	}
