@@ -22,7 +22,7 @@ func Provide(constructor interface{}, options ...dig.ProvideOption) error {
 	return c.Provide(constructor, options...)
 }
 
-func Invode(function interface{}, opts ...dig.InvokeOption) error {
+func Invoke(function interface{}, opts ...dig.InvokeOption) error {
 	c := GetContainer()
 	return c.Invoke(function, opts...)
 }
