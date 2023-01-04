@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -19,11 +20,16 @@ func WithPath(path ...string) option {
 }
 
 func Setup(options ...option) error {
-	ops := &Options{}
+
+	confPath := pflag.String("config", "", "config file path")
+	pflag.Parse()
+
+ 	ops := &Options{}
 
 	for _, opt := range options {
 		opt(ops)
 	}
+	viper.AddConfigPath(*confPath)
 	for _, path := range ops.Path {
 		viper.AddConfigPath(path)
 	}
