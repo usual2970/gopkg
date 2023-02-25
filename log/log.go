@@ -38,12 +38,24 @@ const (
 	defaultServiceName = "hub"
 )
 
-func Setup() {
-	conf := logx.LogConf{
+type option func(*logx.LogConf)
+
+func WithPath(path string) option {
+	return func(conf *logx.LogConf) {
+		conf.Path = path
+	}
+}
+
+func Setup(opts ...option) {
+	conf := &logx.LogConf{
 		ServiceName: getServiceName(),
 		Mode:        getMode(),
 	}
-	logx.MustSetup(conf)
+
+	for _, op := range opts {
+		op(conf)
+	}
+	logx.MustSetup(*conf)
 	dlog = &DLogger{
 		logger: logx.WithCallerSkip(2),
 		fields: make([]logx.LogField, 0),
