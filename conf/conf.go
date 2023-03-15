@@ -10,7 +10,8 @@ import (
 )
 
 type Options struct {
-	Path []string `json:"path"`
+	Path   []string `json:"path"`
+	Prefix string   `json:"prefix"`
 }
 
 type option func(*Options)
@@ -19,16 +20,21 @@ func WithPath(path ...string) option {
 	return func(o *Options) { o.Path = path }
 }
 
+func WithPrefix(prefix string) option {
+	return func(o *Options) { o.Prefix = prefix }
+}
+
 func Setup(options ...option) error {
 
 	confPath := pflag.String("config", "", "config file path")
 	pflag.Parse()
 
- 	ops := &Options{}
+	ops := &Options{}
 
 	for _, opt := range options {
 		opt(ops)
 	}
+
 	viper.AddConfigPath(*confPath)
 	for _, path := range ops.Path {
 		viper.AddConfigPath(path)
@@ -43,6 +49,11 @@ func Setup(options ...option) error {
 	if err != nil {
 		return err
 	}
+	if ops.Prefix != "" {
+		viper.SetEnvPrefix(ops.Prefix)
+	}
+
+	viper.AutomaticEnv()
 
 	if viper.GetBool(`debug`) {
 		log.Println("Service RUN on DEBUG mode")
